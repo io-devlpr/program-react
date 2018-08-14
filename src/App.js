@@ -2,119 +2,132 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-/*
-    Shop
- */
-function InputBox(props){
-    return (
-        <div className={"form-item"}>
-            <label>{props.title}</label>
-            <input className="input" id={props.id} />
-        </div>
-    );
-}
+let items = [
+    {
+        name : "HP Pavilion Power 15.6 inch",
+        price : 2000000,
+        item_category : 2
+    },
+    {
+        name : "LG Digital Refrigerator",
+        price : 3000000,
+        item_category : 1
+    },
+    {
+        name : "Biowang Double Deluxe Bag-pack",
+        price : 50000,
+        item_category : 0
+    },
+    {
+        name : "220W Power Cable",
+        price : 150000,
+        item_category : 2
+    }
 
-function Button(props){
-    return (
-        <div className={"form-item"}>
-            <button onClick={props.onclick}>{(props.title)}</button>
-        </div>
-    );
-}
+];
 
-class Shop extends Component{
+class InputBox extends Component{
     constructor(props){
         super(props);
 
-        // Bind item
-        this.addItem = this.addItem.bind(this);
-
-        // values
+        // Input box state
         this.state = {
-            count : 1,
-            listChosen : [],    // Chosen options
-            itemsCreated : [12, 3, 3]
+            text : ""
         };
+
+        // Binding events
+        this.handleChange = this.handleChange.bind(this)
     }
 
-    addItem(){
-        console.log("Item Added");
-        this.setState({count : this.state.count + 1});
-        this.setState({
-            itemsCreated : this.state.itemsCreated.push(this.state.count)
-        });
-    }
-
-    handleSubmit(e){
-        e.preventDefault();
-
-        console.log("Submitted form");
+    handleChange(e){
+        this.setState({ text: e.target.value });
     }
 
     render(){
-        let val = 0;
         return (
-            <div className={"items"}>
-                <InputBox title={"Customer's Name: "} />
-                <div className={"products-list"}>
-                    {this.state.itemsCreated.map(el => (
-                        <ProductItem number={(++val)} />
-                    ))}
-                    <Button onClick={this.addItem} title={"Add Item"}/>
+            <div className="form-input">
+                <label>{this.props.title}</label>
+                <div>
+                    <input type={this.props.type} onChange={this.handleChange} value={this.state.text} placeholder={this.props.placeholder} />
                 </div>
-
-                <Button title={"Make Purchase"} onClick={this.handleSubmit}/>
             </div>
         );
     }
 }
 
-class ProductItem extends Component{
+
+class Dropdown extends Component {
     constructor(props){
         super(props);
-        this.items = [
-                {
-                    name : "HP Pavilion Power 15.6 inch",
-                    price : 2000000,
-                    item_category : 2
-                },
-                {
-                    name : "LG Digital Refrigerator",
-                    price : 3000000,
-                    item_category : 1
-                },
-                {
-                    name : "Biowang Double Deluxe Bag-pack",
-                    price : 50000,
-                    item_category : 0
-                },
-                {
-                    name : "220W Power Cable",
-                    price : 150000,
-                    item_category : 2
-                }
-            ];
+
+        this.state = {
+            listItems : items,
+            value : null
+        };
+
+        // Bind events
+        this.handleChange = this.handleChange.bind(this);
     }
 
-    render (){
+    handleChange(e){
+        console.log(e.target.value);
+        if(e.target.value === 'x'){
+            // Set value to null
+            this.setState({ value: null });
+        }
+        this.setState({ value: e.target.value });
+    }
+
+    render(){
         let count = 0;
         return (
-            <div className={"product-item"}>
-                <label>Product #{this.props.number}: </label>
-                <select id={"prd-" + count}>
-                    <option value={0}>{"-- Select Value --"}</option>
-                    {this.items.map(elem => (
-                        <option value={++count}>{elem.name}</option>
-                    ))}
-                </select>
+            <div className="form-dropdown">
+                <label>{this.props.title}</label>
+                <div>
+                    <select onChange={this.handleChange}>
+                        <option value="x">{this.props.default}</option>
+                        {this.state.listItems.map(elem => (
+                            <option value={count++}>{elem.name}</option>
+                        ))}
+                    </select>
+                    <label>{(this.state.value !== null) ? this.state.listItems[this.state.value].price : ""}</label>
+                </div>
             </div>
         );
     }
 }
 
-/*
-    End of Shop
- */
+class Shop extends Component{
+    // constructor(props){
+    //     super(props)
+    // }
+
+    addItem(){
+        console.log("Code for adding attempt isn't there.");
+    }
+
+    handleFormSubmit(e){
+        e.preventDefault();
+        console.log("Price has been calculated");
+    }
+
+    render(){
+        return (
+            <div className="ShopApp">
+                <form method="get" action="#" id="make-purchase">
+                    <InputBox title={"Customer's Name"} type={"text"}/>
+                    <div className="ShopProducts">
+                        <Dropdown default="Choose Item" title="Product #1"/>
+                        <span onClick={this.addItem} className="addItem">+ Add Item</span>
+                    </div>
+                    <button onClick={this.handleFormSubmit}>Make Purchase</button>
+                </form>
+            </div>
+        );
+    }
+}
+
+
 
 class App extends Component {
   render() {
@@ -124,9 +137,9 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Byte Store : Place for buying products digitally</h1>
         </header>
-        <p className="App-intro">
+        <div className="App-intro">
             <Shop />
-        </p>
+        </div>
       </div>
     );
   }
